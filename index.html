@@ -1,0 +1,326 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Disciple Self-Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Oswald:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* Layout: one phone-width column; intro → one statement at a time → one-screen scorecard. Single light look to match the Session 1 slides. */
+:root{
+  color-scheme: light;
+  --paper:#F1DFCB; --card:#FBF3EA; --ink:#3A2420; --muted:#7A5E55; --line:#E2C9B2;
+  --red:#8B1A12; --red-soft:#F3D9D2;
+  --god-bg:#F6E3B8; --god:#C9962B;
+  --oth-bg:#F2C2AC; --oth:#C4603D;
+  --pil-bg:#CFE0EC; --pil:#3F6E8C;
+  --display:"Caveat Brush","Comic Sans MS",cursive;
+  --label:"Oswald","Arial Narrow",Arial,sans-serif;
+  --body:"Quicksand","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--paper)}
+body{color:var(--ink);font-family:var(--body);font-weight:500;font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:460px;margin:0 auto;padding-inline:16px;padding-block:20px 40px}
+h1,h2{font-family:var(--display);font-weight:400;color:var(--red);margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:2.6rem}
+h2{font-size:2rem}
+.eyebrow{font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;font-size:.75rem;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.btn{border:0;border-radius:999px;padding:.8em 1.4em;background:var(--red);color:var(--card);font-family:var(--label);font-size:1rem;letter-spacing:.06em;text-transform:uppercase}
+.btn.ghost{background:transparent;color:var(--red);box-shadow:inset 0 0 0 2px var(--red)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.small{padding:.55em 1em;font-size:.82rem}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);font-family:var(--label);text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
+
+/* Intro */
+.intro{display:grid;gap:18px;padding-top:6vh}
+.intro .lead{font-size:1.25rem;font-weight:700;color:var(--ink)}
+.intro ul{margin:0;padding-left:1.1em;color:var(--muted);display:grid;gap:4px}
+.scale-key{display:flex;justify-content:space-between;gap:8px;background:var(--card);border-radius:14px;padding:12px 14px;font-size:.85rem;color:var(--muted)}
+.scale-key b{font-family:var(--label);color:var(--red);font-weight:500;font-size:1.05rem;display:block}
+
+/* Questions */
+.qtop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-block:10px 28px}
+.progress i{display:block;height:100%;background:var(--red);transition:width .25s}
+.stmt{background:var(--card);border-radius:18px;padding:28px 22px;min-height:170px;display:flex;align-items:center;font-size:1.3rem;font-weight:600;line-height:1.4;text-wrap:pretty}
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:22px}
+.choice{aspect-ratio:1;max-width:100%;border:2px solid var(--line);background:var(--card);border-radius:14px;font-family:var(--label);font-size:1.4rem;color:var(--ink);transition:transform .1s,background .15s}
+.choice:active{transform:scale(.95)}
+.choice.on{background:var(--red);border-color:var(--red);color:var(--card)}
+.choice-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:6px;font-size:.72rem;color:var(--muted);text-align:center;line-height:1.2}
+.qnav{display:flex;justify-content:space-between;align-items:center;margin-top:26px}
+
+/* Results */
+#card{background:var(--paper);padding-block:4px 6px;display:grid;gap:12px}
+.rhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.panel{background:var(--card);border-radius:16px;padding:14px 16px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.summary>div{min-width:0;display:grid;align-content:start;gap:3px}
+.sl{font-family:var(--label);text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.sl i{width:8px;height:8px;border-radius:50%;flex:none}
+.sn{font-size:.84rem;font-weight:700;line-height:1.25}
+.none{font-size:.78rem;color:var(--muted);line-height:1.3}
+.bars{display:grid;gap:14px}
+.sec h3{margin:0 0 4px;font-family:var(--label);font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:.7rem;display:flex;align-items:center;gap:6px}
+.sec h3 i{width:8px;height:8px;border-radius:50%}
+.row{display:block;width:100%;text-align:left;background:none;border:0;padding:5px 0;border-radius:8px}
+.rline{display:grid;grid-template-columns:10px 116px 1fr 26px;gap:8px;align-items:center}
+.chev{width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-2px) rotate(45deg);transition:transform .2s}
+.row[aria-expanded="true"] .chev{transform:translateY(2px) rotate(-135deg)}
+.qn{font-weight:600;font-size:.88rem;line-height:1.2}
+.track{position:relative;height:8px;border-radius:4px;background:var(--line)}
+.fill{position:absolute;inset:0 auto 0 0;border-radius:4px}
+.tick{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink)}
+.val{font-family:var(--label);font-size:.9rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.more{font-size:.84rem;line-height:1.45;margin-top:8px;padding:10px 12px;border-radius:10px;display:grid;gap:6px}
+.more .verse{font-style:italic}
+.more .verse b{font-style:normal;font-family:var(--label);font-weight:500;letter-spacing:.04em}
+.more .try b{font-family:var(--label);font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;color:var(--red)}
+.hint{font-size:.75rem;color:var(--muted);margin:0 0 10px}
+.legend{font-size:.75rem;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:10px}
+.legend .tick{position:static;display:inline-block;height:12px;margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.actions .grow{flex:1}
+.codeline{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.code{font-family:var(--label);letter-spacing:.1em;font-size:.9rem;color:var(--ink);word-break:break-all;font-variant-numeric:tabular-nums}
+details.cmpbox{margin-top:12px;font-size:.85rem}
+details.cmpbox summary{cursor:pointer;color:var(--muted);font-family:var(--label);text-transform:uppercase;letter-spacing:.08em;font-size:.75rem}
+.cmp{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.cmp input{flex:1 1 180px;min-width:0;font:inherit;font-family:var(--label);letter-spacing:.1em;padding:.5em .8em;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.msg{font-size:.82rem;color:var(--muted);min-height:1.2em}
+.overlay{position:fixed;inset:0;background:rgba(58,36,32,.75);display:grid;place-items:center;padding:16px;z-index:10}
+.overlay .box{background:var(--card);border-radius:16px;padding:14px;max-width:420px;width:100%;max-height:90%;overflow:auto;display:grid;gap:10px}
+.overlay img{border-radius:10px;width:100%}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <!-- Intro -->
+  <section id="intro" class="intro">
+    <div class="eyebrow">Spiritual Discipleship · Session 1</div>
+    <h1>Disciple Self-Check</h1>
+    <p class="lead">Quick self-check!<br><br>You will be asked 22 questions which will take about 3 minutes.<br><br>Don't think too much, just answer as honestly as you can!</p>
+    <div><button class="btn" id="startBtn">Start</button></div>
+  </section>
+
+  <!-- Questions -->
+  <section id="quiz" hidden>
+    <div class="qtop"><span class="eyebrow" id="count">1 / 22</span><button class="linkbtn" id="quitBtn">Back to start</button></div>
+    <div class="progress"><i id="bar" style="width:0"></i></div>
+    <div class="stmt" id="stmt"></div>
+    <div class="choices" id="choices"></div>
+    <div class="choice-labels"><span>Not true</span><span></span><span>Sometimes</span><span></span><span>Very true</span></div>
+    <div class="qnav"><button class="btn ghost small" id="backBtn">Back</button><button class="btn small" id="nextBtn">Next</button></div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" hidden>
+    <div id="card">
+      <div class="rhead">
+        <h2>Where I Stand</h2>
+        <div class="eyebrow" id="rdate"></div>
+      </div>
+      <div class="panel summary" id="buckets"></div>
+      <div class="panel">
+        <p class="hint" id="hint">Tap a quality to see its verse and a step to try.</p>
+        <div class="bars" id="sections"></div>
+        <div class="legend" id="legend" hidden><span class="tick"></span><span>Earlier result</span></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn small grow" id="saveBtn">Save as image</button>
+      <button class="btn ghost small" id="retakeBtn">Retake</button>
+    </div>
+    <div class="msg" id="saveMsg"></div>
+    <div class="codeline">
+      <span>Result code <span class="code" id="code"></span></span>
+      <button class="linkbtn" id="copyBtn">Copy code</button>
+    </div>
+    <details class="cmpbox" id="cmpBox">
+      <summary>Compare with an earlier code</summary>
+      <div class="cmp"><input id="cmpInput" inputmode="numeric" autocomplete="off" placeholder="Paste a 22-digit code" aria-label="Earlier result code"><button class="btn small" id="cmpBtn">Show</button></div>
+      <div class="msg" id="cmpMsg"></div>
+    </details>
+  </section>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="box">
+    <img id="shot" alt="Your self-check scorecard">
+    <div class="msg">On a phone, long-press the image to save it.</div>
+    <div class="actions" style="margin:0"><a class="btn small" id="dl" download="disciple-self-check.png" style="text-decoration:none">Download</a><button class="btn ghost small" id="closeShot">Close</button></div>
+  </div>
+</div>
+
+<script>
+const SECTIONS=[
+  {name:'Toward God',bg:'var(--god-bg)',fg:'var(--god)',dk:'#8A6418'},
+  {name:'Toward others',bg:'var(--oth-bg)',fg:'var(--oth)',dk:'#9C4527'},
+  {name:'Pillars',bg:'var(--pil-bg)',fg:'var(--pil)',dk:'var(--pil)'}
+];
+const Q=[
+ {n:'Inadequacy',s:0,ref:'Matt 5:3',v:'Blessed are the poor in spirit, for theirs is the kingdom of heaven.',
+  a:['When something is hard (exams, work, serving), my first instinct is to depend on God, not just try harder.','I pray about things before I start them, not only when they go wrong.'],
+  t:'Before your next big task (exam, lesson, shift), pause and pray: "Lord, I can\'t do this without You."'},
+ {n:'Contrition',s:0,ref:'Matt 5:4',v:'Blessed are those who mourn, for they will be comforted.',
+  a:['When I sin, it genuinely bothers me. I don\'t shrug it off or make excuses.','I confess specific sins to God, not just a general "forgive me for everything."'],
+  t:'End each day this week naming one thing to confess, then receive His forgiveness (1 John 1:9).'},
+ {n:'Humility',s:0,ref:'Matt 5:5',v:'Blessed are the meek, for they will inherit the earth.',
+  a:['I usually accept correction without becoming defensive.','When the group goes with someone else\'s idea instead of mine, I usually support it without sulking.'],
+  t:'Next time you\'re corrected, say "thank you" before explaining yourself.'},
+ {n:'Aspiration',s:0,ref:'Matt 5:6',v:'Blessed are those who hunger and thirst for righteousness, for they will be filled.',
+  a:['I spend time with God even when I don\'t need anything from Him.','I read the Bible or pray because I want to, not only because I should.'],
+  t:'Spend 5 minutes this week simply enjoying God. No requests, only praise.'},
+ {n:'Compassion',s:1,ref:'Matt 5:7',v:'Blessed are the merciful, for they will be shown mercy.',
+  a:['When someone fails or annoys me, I give them a fresh start rather than writing them off.','When I notice someone struggling, I do something about it, not just feel sorry.'],
+  t:'Pray by name for the child you serve who\'s hardest to love.'},
+ {n:'Purity',s:1,ref:'Matt 5:8',v:'Blessed are the pure in heart, for they will see God.',
+  a:['I\'m the same person on Sunday, at school or work, and online.','What I think about, and look at online, is something I\'d be okay with God seeing.'],
+  t:'Delete or archive one thing (a post, chat or follow) you wouldn\'t want Jesus to see.'},
+ {n:'Peacemaking',s:1,ref:'Matt 5:9',v:'Blessed are the peacemakers, for they will be called children of God.',
+  a:['When there\'s tension in a group, I help bring people back together rather than avoid it or take sides.','When I\'ve had a falling-out with someone, I take the first step to make it right.'],
+  t:'Is there a relationship with unresolved tension? Take the first step to reach out.'},
+ {n:'Loyalty',s:1,ref:'Matt 5:10–11',v:'Blessed are those who are persecuted because of righteousness, for theirs is the kingdom of heaven.',
+  a:['I\'m willing to be known as a follower of Jesus, even when it costs me socially.','When people mock Christians or my beliefs, I don\'t hide my faith or laugh along.'],
+  t:'Look for one natural moment this week to mention your faith.'},
+ {n:'Unrivalled Love',s:2,ref:'Luke 14:26',v:'If anyone comes to me and does not hate father and mother, wife and children, brothers and sisters—yes, even their own life—such a person cannot be my disciple.',
+  a:['If following Jesus clashed with what my family or friends wanted, Jesus would come first.','I don\'t need people\'s approval to feel secure. God\'s is enough.'],
+  t:'Name one person whose approval you chase. Pray for them, and tell God He comes first.'},
+ {n:'Cross-Bearing',s:2,ref:'Luke 14:27',v:'And whoever does not carry their cross and follow me cannot be my disciple.',
+  a:['I\'m willing to give up comfort or popularity for Jesus.','I keep serving even when it\'s tiring or inconvenient, or when no one notices.'],
+  t:'Do one unseen serving task this month (setting up, cleaning up) without being asked.'},
+ {n:'Surrender',s:2,ref:'Luke 14:33',v:'In the same way, those of you who do not give up everything you have cannot be my disciples.',
+  a:['I see my time and future plans as God\'s, not just mine.','If God asked me to give up something I own or enjoy (money, screen time, a hobby), I would.'],
+  t:'Pick one thing (time, money, phone) and offer it back in prayer: "This is Yours."'}
+];
+const N=Q.length*2;
+const $=id=>document.getElementById(id);
+let order=[],answers=new Array(N).fill(0),pos=0,prev=null,openRow=-1;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function show(id){['intro','quiz','results'].forEach(s=>$(s).hidden=s!==id);window.scrollTo(0,0)}
+
+function start(){
+  order=shuffle([...Array(N).keys()]);answers.fill(0);pos=0;prev=null;openRow=-1;
+  $('cmpInput').value='';$('cmpMsg').textContent='';$('cmpBox').open=false;
+  show('quiz');renderQ();
+}
+function renderQ(){
+  const idx=order[pos],q=Q[idx>>1];
+  $('count').textContent=(pos+1)+' / '+N;
+  $('bar').style.width=(pos/N*100)+'%';
+  $('stmt').textContent=q.a[idx&1];
+  $('backBtn').style.visibility=pos?'visible':'hidden';
+  $('quitBtn').style.visibility=pos?'visible':'hidden';
+  const last=pos===N-1;
+  $('nextBtn').textContent=last?'See my results':'Next';
+  $('nextBtn').disabled=!answers[idx];
+  $('choices').innerHTML='';
+  for(let v=1;v<=5;v++){
+    const b=document.createElement('button');
+    b.className='choice'+(answers[idx]===v?' on':'');b.textContent=v;b.id='c'+v;
+    b.setAttribute('aria-label',v+(v===1?' Not true':v===3?' Sometimes':v===5?' Very true':''));
+    b.onclick=()=>pick(v);
+    $('choices').appendChild(b);
+  }
+}
+let busy=false;
+// First answer to a question moves on by itself; changing an earlier answer stays put so people can review with Back/Next.
+function pick(v){
+  if(busy)return;
+  const idx=order[pos],first=!answers[idx];
+  answers[idx]=v;
+  [...$('choices').children].forEach((c,i)=>c.classList.toggle('on',i+1===v));
+  $('nextBtn').disabled=false;
+  if(first&&pos<N-1){busy=true;setTimeout(()=>{busy=false;pos++;renderQ()},220)}
+}
+function next(){
+  if(!answers[order[pos]])return;
+  if(pos<N-1){pos++;renderQ()}else{$('bar').style.width='100%';results()}
+}
+
+function scores(arr){return Q.map((_,i)=>(arr[i*2]+arr[i*2+1])/2)}
+const fmt=x=>Number.isInteger(x)?String(x):x.toFixed(1);
+function bucketOf(x){return x>=4?0:x>=3?1:2}
+
+function results(){
+  show('results');
+  const d=new Date();
+  $('rdate').textContent=d.toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'});
+  $('code').textContent=answers.join('');
+  draw();
+}
+function draw(){
+  const sc=scores(answers), pv=prev?scores(prev):null;
+  // Buckets: three columns, highest first
+  const names=['Strong','Growing','Room to grow'],dots=['var(--red)','#D98C80','var(--line)'];
+  const groups=[[],[],[]];
+  Q.forEach((q,i)=>groups[bucketOf(sc[i])].push(i));
+  groups.forEach(g=>g.sort((a,b)=>sc[b]-sc[a]));
+  const lowest=Math.min(...sc);
+  $('buckets').innerHTML=groups.map((g,k)=>{
+    let inner=g.map(i=>`<span class="sn">${Q[i].n}</span>`).join('');
+    if(!g.length) inner=`<span class="none">${["None yet, more chances to grow!","None at the moment!","Thank God, you're doing great!"][k]}</span>`;
+    return `<div><span class="sl"><i style="background:${dots[k]}"></i>${names[k]}</span>${inner}</div>`;
+  }).join('');
+  // Bars by section
+  $('sections').innerHTML=SECTIONS.map((s,si)=>{
+    const rows=Q.map((q,i)=>({q,i})).filter(o=>o.q.s===si).map(({q,i})=>{
+      const w=(sc[i]-1)/4*100, open=openRow===i;
+      const tick=pv?`<span class="tick" style="left:${(pv[i]-1)/4*100}%" title="Earlier: ${fmt(pv[i])}"></span>`:'';
+      return `<button class="row" id="row${i}" data-i="${i}" aria-expanded="${open}">
+        <span class="rline"><span class="chev" aria-hidden="true"></span><span class="qn">${q.n}</span>
+        <span class="track"><span class="fill" style="width:${Math.max(w,3)}%;background:${s.fg}"></span>${tick}</span>
+        <span class="val">${fmt(sc[i])}</span></span>
+        <span class="more" style="background:${s.bg}" ${open?'':'hidden'}>
+          <span class="verse"><b>${q.ref}</b> “${q.v}”</span>
+          <span class="try"><b>Try this</b><br>${q.t}</span>
+        </span></button>`;
+    }).join('');
+    return `<div class="sec"><h3 style="color:${s.dk}"><i style="background:${s.fg}"></i>${s.name}</h3>${rows}</div>`;
+  }).join('');
+  document.querySelectorAll('.row').forEach(r=>r.onclick=()=>{const i=+r.dataset.i;openRow=openRow===i?-1:i;draw()});
+  $('legend').hidden=!pv;
+}
+
+// Save image
+$('saveBtn').onclick=async()=>{
+  const was=openRow;openRow=-1;draw();$('hint').hidden=true;
+  $('saveMsg').textContent='Making image…';
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const canvas=await html2canvas($('card'),{backgroundColor:'#F1DFCB',scale:2,logging:false});
+    const url=canvas.toDataURL('image/png');
+    $('shot').src=url;$('dl').href=url;$('overlay').hidden=false;$('saveMsg').textContent='';
+  }catch(e){$('saveMsg').textContent='Couldn\'t make the image here. Take a screenshot instead.'}
+  $('hint').hidden=false;openRow=was;draw();
+};
+$('closeShot').onclick=()=>$('overlay').hidden=true;
+$('overlay').onclick=e=>{if(e.target.id==='overlay')$('overlay').hidden=true};
+
+// Code copy + compare
+$('copyBtn').onclick=async()=>{
+  const c=answers.join('');
+  try{await navigator.clipboard.writeText(c);$('copyBtn').textContent='Copied'}
+  catch(e){const r=document.createRange();r.selectNodeContents($('code'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copyBtn').textContent='Selected, copy it'}
+  setTimeout(()=>$('copyBtn').textContent='Copy code',2000);
+};
+$('cmpBtn').onclick=()=>{
+  const v=$('cmpInput').value.replace(/\D/g,'');
+  if(!v){prev=null;$('cmpMsg').textContent='';draw();return}
+  if(!new RegExp('^[1-5]{'+N+'}$').test(v)){$('cmpMsg').textContent='That code should be '+N+' digits, each from 1 to 5.';return}
+  prev=v.split('').map(Number);$('cmpMsg').textContent='Dark marks show the earlier result.';draw();
+};
+
+$('startBtn').onclick=start;
+$('retakeBtn').onclick=start;
+$('quitBtn').onclick=()=>{pos=0;renderQ()};
+$('backBtn').onclick=()=>{if(pos>0){pos--;renderQ()}};
+$('nextBtn').onclick=next;
+document.addEventListener('keydown',e=>{if(!$('quiz').hidden&&/^[1-5]$/.test(e.key))pick(+e.key)});
+</script>
+</body></html>
