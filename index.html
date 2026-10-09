@@ -79,6 +79,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--red);outline-of
 .more .verse{font-style:italic}
 .more .verse b{font-style:normal;font-family:var(--label);font-weight:500;letter-spacing:.04em}
 .more .try b{font-family:var(--label);font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;color:var(--red)}
+.startrow{display:flex;flex-wrap:wrap;gap:10px}
 .hint{font-size:.75rem;color:var(--muted);margin:0 0 10px}
 .legend{font-size:.75rem;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:10px}
 .legend .tick{position:static;display:inline-block;height:12px;margin:0}
@@ -104,7 +105,12 @@ details.cmpbox summary{cursor:pointer;color:var(--muted);font-family:var(--label
     <div class="eyebrow">Spiritual Discipleship · Session 1</div>
     <h1>Disciple Self-Check</h1>
     <p class="lead">Quick self-check!<br><br>You will be asked 22 questions which will take about 3 minutes.<br><br>Don't think too much, just answer as honestly as you can!</p>
-    <div><button class="btn" id="startBtn">Start</button></div>
+    <div class="startrow"><button class="btn" id="startBtn">Start</button><button class="btn ghost" id="lastBtn" hidden>View my last result</button></div>
+    <details class="cmpbox" id="loadBox">
+      <summary>Have a result code?</summary>
+      <div class="cmp"><input id="loadInput" inputmode="numeric" autocomplete="off" placeholder="Paste your 22-digit code" aria-label="Your result code"><button class="btn small" id="loadBtn">View</button></div>
+      <div class="msg" id="loadMsg"></div>
+    </details>
   </section>
 
   <!-- Questions -->
@@ -166,7 +172,7 @@ const Q=[
  {n:'Inadequacy',s:0,ref:'Matt 5:3',v:'Blessed are the poor in spirit, for theirs is the kingdom of heaven.',
   a:['When something is hard (exams, work, serving), my first instinct is to depend on God, not just try harder.','I pray about things before I start them, not only when they go wrong.'],
   t:'Before your next big task (exam, lesson, shift), pause and pray: "Lord, I can\'t do this without You."'},
- {n:'Contrition',s:0,ref:'Matt 5:4',v:'Blessed are those who mourn, for they will be comforted.',
+ {n:'Repentance',s:0,ref:'Matt 5:4',v:'Blessed are those who mourn, for they will be comforted.',
   a:['When I sin, it genuinely bothers me. I don\'t shrug it off or make excuses.','I confess specific sins to God, not just a general "forgive me for everything."'],
   t:'End each day this week naming one thing to confess, then receive His forgiveness (1 John 1:9).'},
  {n:'Humility',s:0,ref:'Matt 5:5',v:'Blessed are the meek, for they will inherit the earth.',
@@ -178,7 +184,7 @@ const Q=[
  {n:'Compassion',s:1,ref:'Matt 5:7',v:'Blessed are the merciful, for they will be shown mercy.',
   a:['When someone fails or annoys me, I give them a fresh start rather than writing them off.','When I notice someone struggling, I do something about it, not just feel sorry.'],
   t:'Pray by name for the child you serve who\'s hardest to love.'},
- {n:'Purity',s:1,ref:'Matt 5:8',v:'Blessed are the pure in heart, for they will see God.',
+ {n:'Pure in Heart',s:1,ref:'Matt 5:8',v:'Blessed are the pure in heart, for they will see God.',
   a:['I\'m the same person on Sunday, at school or work, and online.','What I think about, and look at online, is something I\'d be okay with God seeing.'],
   t:'Delete or archive one thing (a post, chat or follow) you wouldn\'t want Jesus to see.'},
  {n:'Peacemaking',s:1,ref:'Matt 5:9',v:'Blessed are the peacemakers, for they will be called children of God.',
@@ -247,9 +253,13 @@ function scores(arr){return Q.map((_,i)=>(arr[i*2]+arr[i*2+1])/2)}
 const fmt=x=>Number.isInteger(x)?String(x):x.toFixed(1);
 function bucketOf(x){return x>=4?0:x>=3?1:2}
 
-function results(){
+const STORE='disciple-selfcheck-last';
+function saveLast(d){try{localStorage.setItem(STORE,JSON.stringify({a:answers.join(''),t:d.getTime()}))}catch(e){}}
+function loadLast(){try{const o=JSON.parse(localStorage.getItem(STORE)||'null');if(o&&/^[1-5]{22}$/.test(o.a))return o}catch(e){}return null}
+function results(when){
   show('results');
-  const d=new Date();
+  const d=when?new Date(when):new Date();
+  if(!when)saveLast(d);
   $('rdate').textContent=d.toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'});
   $('code').textContent=answers.join('');
   draw();
@@ -317,6 +327,14 @@ $('cmpBtn').onclick=()=>{
 };
 
 $('startBtn').onclick=start;
+function codeValid(v){return new RegExp('^[1-5]{'+N+'}$').test(v)}
+const last=loadLast();
+if(last){$('lastBtn').hidden=false;$('lastBtn').onclick=()=>{answers=last.a.split('').map(Number);prev=null;openRow=-1;results(last.t)}}
+$('loadBtn').onclick=()=>{
+  const v=$('loadInput').value.replace(/\D/g,'');
+  if(!codeValid(v)){$('loadMsg').textContent='That code should be '+N+' digits, each from 1 to 5.';return}
+  answers=v.split('').map(Number);prev=null;openRow=-1;$('loadMsg').textContent='';results();
+};
 $('retakeBtn').onclick=start;
 $('quitBtn').onclick=()=>{pos=0;renderQ()};
 $('backBtn').onclick=()=>{if(pos>0){pos--;renderQ()}};
